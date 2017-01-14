@@ -1,0 +1,46 @@
+At least one variant of Breakout that you thought was interesting and what was interesting about it:
+
+One variant of Breakout I found interesting was Circus, because of the different possible bounces based on the location of the contact on the paddle.
+While I don't intend to make a game identical to Circus, I do wish to integrate this variation in bouncing in BunnyBreakout.
+BunnyBreakout will have a bunny bouncing around, trying to destroy carrots (and soil, and grass, in harder levels).
+When landing in the middle third of the paddle, the bunny will bounce back at the expected angle. When landing on the sides of the paddle, the bunny will bounce back in the opposite of the direction it arrived in.
+
+A general description of the different levels you intend to build (perhaps with "pictures" of the block configurations):
+
+I plan on building three different levels.
+1. The first will consist entirely of carrots, placed in a triangular form. The user will simply have to destroy these carrots, and one bounce on each carrot will suffice. The carrots will be at the top of the screen.
+2. The second will consist of carrots, placed randomly in several layers and partially protected by a layer of soil. The user will have to destroy both the carrots and the soil. The soil, however, will require two bounces to be removed. Because of this additional layer of soil, the blocks will be closer to the bottom of the screen than previously.
+3. Finally, the third level will consist of carrots (placed randomly in several layers), soil, and grass. The carrots will be protected by these other components. The grass will be destroyed by three bounces, and the carrots and soil will follow the previously established rules. Because of the grass layer, the blocks will be closer to the bottom of the screen, again.
+As levels increase, the speed of the bunny will increase as well.
+
+Several different blocks you want to create:
+
+As described in the previous question, I will create three types of blocks:
+1. Carrot blocks: these will be destroyed in one hit, and worth 15 points.
+2. Soil blocks: these will be destroyed in two hits, and worth 10 points.
+3. Grass blocks: these will be destroyed in three hits, and worth 5 points.
+
+One might question why blocks that are more difficult to destroy will be worth less. I think this would be a good feature, however, for two reasons. First, it reflects the rabbit's overall goal: reaching the carrots. Because the carrots are its objective, they should be worth more. Secondly, because the soil and grass are available to be destroyed first, I believe they should be worth less, in order to reward a user that has survived for longer in the game.
+
+Several different power ups you want to create:
+
+I wish to create three power-ups:
+1. A power-up that doubles the size of the paddle for 7 seconds. Should drop 50% of the time when a block is eliminated.
+2. A power-up that makes a second bunny appear. Should drop 25% of the time when a block is destroyed.
+3. A power-up that removes every block above the location where it's caught. Should drop 15% of the time when a block is eliminated.
+
+If randomness determines that several power-ups should appear, the "best" one will fall (3 is better than 2, and 2 is better than 1).
+
+Several different cheat keys you are planning to include:
+
+Here are a few cheat keys I will include:
+1. Pressing the space bar will extend the paddle to fill the entire space horizontally.
+2. Pressing 1, 2, or 3 will send the user to the appropriate level.
+3. Pressing S in levels 2 and 3 will remove the layer of soil.
+4. Pressing G in level 3 will remove the layer of grass.
+
+Something extra you intend to add and why you think it is a substantial addition:
+
+I plan on giving the user extra bonus points if a level is finished under a certain amount of time. These bonus points could be proportional to the number of seconds shaved off a baseline time.
+I believe this addition is substantial, because the user has a large amount of control over where s/he is aiming: because the bunny can bounce off the paddle in several ways, the user can actually somewhat aim.
+By aiming in the right direction, the user can aim to destroy blocks more efficiently and faster, and consequently, I believe speed should be rewarded.
