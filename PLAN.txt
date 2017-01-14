@@ -44,3 +44,5 @@ Something extra you intend to add and why you think it is a substantial addition
 I plan on giving the user extra bonus points if a level is finished under a certain amount of time. These bonus points could be proportional to the number of seconds shaved off a baseline time.
 I believe this addition is substantial, because the user has a large amount of control over where s/he is aiming: because the bunny can bounce off the paddle in several ways, the user can actually somewhat aim.
 By aiming in the right direction, the user can aim to destroy blocks more efficiently and faster, and consequently, I believe speed should be rewarded.
+
+I also believe the paddle should be able to wrap around in its movement. This would bail the quick user out of bad situations!
