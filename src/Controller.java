@@ -1,5 +1,6 @@
 import java.net.URL;
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.Random;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -8,30 +9,17 @@ import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class Controller extends Application {
-    public static final String TITLE = "BunnyBreakout";
-    public static final int WIDTH = 400;
-    public static final int HEIGHT = 440;
-    public static final Paint BACKGROUND = Color.BLACK;
-    public static final int FRAMES_PER_SECOND = 60;
-    public static final int MILLISECOND_DELAY = 1000 / FRAMES_PER_SECOND;
-    public static final double SECOND_DELAY = 1.0 / FRAMES_PER_SECOND;
-    public static final int KEY_INPUT_SPEED = 20;
-    public static final double GROWTH_RATE = 1.1;
-    public static final String FONT = "Courier";
-    public static final int FONT_SIZE = 18; 
-
+	
     private Stage myStage;
     public Scene myScene;
     private Timeline animation;
-    private Bunny bunny;
-    private Status status;
-    private SplashScreen splashScreen;
+    private Status myStatus;
+    private MessageView splashScreen;
     private Boolean keysEnabled = false;
     private Boolean splashing = true;
     private Boolean showingMessage = false;
@@ -39,6 +27,8 @@ public class Controller extends Application {
     public static User myUser;
     public static Level myLevel;
     public static TopHat myTopHat;
+    
+    private ArrayList<Bunny> bunnies = new ArrayList<Bunny>();
 
     /**
      * Initialize what will be displayed and how it will be updated.
@@ -47,18 +37,18 @@ public class Controller extends Application {
     public void start (Stage s) {
         // attach scene to the stage and display it
     	userSetup();
-        Scene scene = setupGame(WIDTH, HEIGHT, BACKGROUND, 1);
+        Scene scene = setupGame(Settings.WIDTH, Settings.HEIGHT, Settings.SECONDARY_COLOR, 1);
         s.setScene(scene);
-        s.setTitle(TITLE);
+        s.setTitle(Settings.TITLE);
         s.show();
         myStage = s;
         // attach "game loop" to timeline to play it
-        KeyFrame frame = new KeyFrame(Duration.millis(MILLISECOND_DELAY),
-                                      e -> step(SECOND_DELAY));
+        KeyFrame frame = new KeyFrame(Duration.millis(Settings.MILLISECOND_DELAY),
+                                      e -> step(Settings.SECOND_DELAY));
         animation = new Timeline();
         animation.setCycleCount(Timeline.INDEFINITE);
         animation.getKeyFrames().add(frame);
-        
+                
         playSong();
     }
     
@@ -67,20 +57,16 @@ public class Controller extends Application {
     }
 
     private Scene setupGame (int width, int height, Paint background, int levelNumber) {
-    	Line line = new Line();
     	if (splashing) {
-        	splashScreen = new SplashScreen();
-        	splashScreen.getChildren().add(line);
+        	splashScreen = new MessageView(true, false);
         	myScene = new Scene(splashScreen, width, height, background);
     	}
     	else {
             myLevel = new Level(levelNumber);
             myScene = new Scene(myLevel, width, height, background);
             myTopHat = new TopHat();
-            status = new Status();
-        	bunny = new Bunny();
-            myLevel.getChildren().add(bunny);
-        	myLevel.getChildren().add(line);
+            myStatus = new Status();
+        	resetBunnies();
             startTimer();
     	}
         myScene.setOnKeyPressed(e -> handleKeyInput(e.getCode()));
@@ -96,17 +82,21 @@ public class Controller extends Application {
     }
     
     private void step (double elapsedTime) {
-    	checkVerticalWalls(bunny);
-    	checkTopWall(bunny);
-    	checkPaddle(bunny);
-    	checkBlocks(bunny);
-    	checkFailedToCatch(bunny);
-    	updateX(bunny, elapsedTime);
-    	updateY(bunny, elapsedTime);
+    	for (int i = 0; i < bunnies.size(); i++) {
+    		Bunny bunny = bunnies.get(i);
+	    	checkVerticalWalls(bunny);
+	    	checkTopWall(bunny);
+	    	checkPaddle(bunny);
+	    	checkBlocks(bunny);
+	    	checkPowerUps();
+	    	updateX(bunny, elapsedTime);
+	    	updateY(bunny, elapsedTime);
+    	}
+    	updatePowerUps(elapsedTime);
     }
-    
+
     private void checkVerticalWalls (Bunny bunny) {
-    	if (bunny.getX() >= WIDTH - bunny.getBoundsInLocal().getWidth()) {
+    	if (bunny.getX() >= Settings.WIDTH - bunny.getBoundsInLocal().getWidth()) {
         	bunny.goingRight = false;
         }
         if (bunny.getX() <= 0) {
@@ -115,7 +105,7 @@ public class Controller extends Application {
     }
     
     private void checkTopWall (Bunny bunny) {
-        if (bunny.getY() <= Status.HEIGHT) {
+        if (bunny.getY() <= Status.PADDING) {
         	bunny.goingDown = true;
         }
     }
@@ -130,11 +120,17 @@ public class Controller extends Application {
             	bunny.goingRight = !bunny.goingRight;
         	}
     	}
+    	else if (bunny.getY() >= Settings.HEIGHT) {
+    		bunnies.remove(bunny);
+    		if (bunnies.size() == 0) {
+        		updateLives();
+    		}
+    	}
     }
     
     private void checkBlocks (Bunny bunny) {
-    	for (Iterator<Block> iterator = myLevel.blocks.iterator(); iterator.hasNext();) {
-    		Block block = iterator.next();
+    	for (int i = 0; i < myLevel.blocks.size(); i++) {
+    		Block block = myLevel.blocks.get(i);
     		Boolean intersected = false;
     		if (block.verticalWallsIntersected(bunny)) {
     			bunny.goingRight = !bunny.goingRight;
@@ -147,23 +143,41 @@ public class Controller extends Application {
     		if (intersected) {
     			block.hits -= 1;
     			if (block.hits == 0) {
-        			myLevel.getChildren().remove(block);
-        			iterator.remove();
+    				block.animate();
+    				determinePowerUp(block);
+        			myLevel.blocks.remove(i);
+        			i -= 1;
         			updatePoints(block.worth);
         			checkLevelDone();
         			return;
+    			}
+    			if (block.type != 1) {
+    				block.updateImage();
     			}
     		}
     	}
     }
     
-    private void checkFailedToCatch (Bunny bunny) {
-    	if (bunny.getY() >= HEIGHT) {
-    		updateLives();
-    		reset();
+    private void checkPowerUps () {
+    	for (int i = 0; i < myLevel.powerUps.size(); i++) {
+    		PowerUp power = myLevel.powerUps.get(i);
+    		if (myTopHat.intersects(power) && power.getY() + power.getBoundsInParent().getHeight() <= myTopHat.getY() + myTopHat.BRIM_HEIGHT) {
+    			if (power.type == 1) {
+    				myTopHat.doubleSize();
+    			}
+    			else if (power.type == 2) {
+    				addBunny();
+    			}
+    			else if (power.type == 3) {
+    				destroyColumnOfBlocks(power);
+    			}
+    			myLevel.getChildren().remove(power);
+    			myLevel.powerUps.remove(i);
+    			i -= 1;
+        	}
     	}
     }
-
+    
     private void updateX (Bunny bunny, double elapsedTime) {
         if (bunny.goingRight) {
         	bunny.setX(bunny.getX() + myLevel.BUNNY_X_SPEED * elapsedTime);
@@ -173,13 +187,26 @@ public class Controller extends Application {
         }
     }
     
-    private void updateY (Bunny bunny, double elapsedTime) {
+    private void updateY(Bunny bunny, double elapsedTime) {
         if (bunny.goingDown) {
         	bunny.setY(bunny.getY() + myLevel.BUNNY_Y_SPEED * elapsedTime);
         }
         else {
         	bunny.setY(bunny.getY() - myLevel.BUNNY_Y_SPEED * elapsedTime);
         }
+    }
+    
+    private void updatePowerUps(double elapsedTime) {
+    	for (int i = 0; i < myLevel.powerUps.size(); i++) {
+    		PowerUp power = myLevel.powerUps.get(i);
+    		if (power.getY() >= Settings.HEIGHT) {
+    			myLevel.getChildren().remove(power);
+    			myLevel.powerUps.remove(i);
+    			i -= 1;
+    			return;
+    		}
+        	power.setY(power.getY() + 60 * elapsedTime);
+    	}
     }
     
     private void checkLevelDone() {
@@ -190,24 +217,27 @@ public class Controller extends Application {
     
     private void updateLives() {
 		myUser.removeLife();
-    	status.lives.setText(myUser.livesString());
+    	myStatus.lives.setText(myUser.livesString());
     	if (myUser.lives == 0) {
     		displayMessage(false);
+    	}
+    	else {
+    		reset();
     	}
     }
     
     private void updatePoints(int amount) {
 		myUser.addPoints(amount);
-    	status.points.setText(myUser.pointsString());
+    	myStatus.points.setText(myUser.pointsString());
     }
     
     private void updateLevel(int levelNumber) {
-    	if (levelNumber == 4) {
+    	if (levelNumber > Settings.LEVELS) {
     		displayMessage(true);
     		return;
     	}
 		myUser.changeLevel(levelNumber);
-    	status.level.setText(myUser.levelString());
+    	myStatus.level.setText(myUser.levelString());
 		goToLevel(myUser.level);
 		reset();
     }
@@ -215,8 +245,9 @@ public class Controller extends Application {
     private void reset() {
     	animation.pause();
     	myTopHat.center();
-    	bunny.center();
-        bunny.goingDown = false;
+    	removePowerUps();
+    	resetBunnies();
+    	myLevel.setSpeed(myUser.level);
         keysEnabled = false;
         startTimer();
     }
@@ -257,19 +288,19 @@ public class Controller extends Application {
     private void checkDirectionals (KeyCode code) {
     	if (keysEnabled) {
 		    if (code == KeyCode.RIGHT) {
-		    	if (WIDTH - myTopHat.getX() <= KEY_INPUT_SPEED) {
+		    	if (Settings.WIDTH - myTopHat.getX() <= Settings.KEY_INPUT_SPEED) {
 		    		myTopHat.setX(0);
 		    	}
 		    	else {
-		    		myTopHat.setX(myTopHat.getX() + KEY_INPUT_SPEED);
+		    		myTopHat.setX(myTopHat.getX() + Settings.KEY_INPUT_SPEED);
 		    	}
 		    }
 		    else if (code == KeyCode.LEFT) {
-		    	if (myTopHat.getX() + myTopHat.getWidth() <= KEY_INPUT_SPEED) {
-		    		myTopHat.setX(WIDTH - myTopHat.getWidth());
+		    	if (myTopHat.getX() + myTopHat.getWidth() <= Settings.KEY_INPUT_SPEED) {
+		    		myTopHat.setX(Settings.WIDTH - myTopHat.getWidth());
 		    	}
 		    	else {
-		    		myTopHat.setX(myTopHat.getX() - KEY_INPUT_SPEED);
+		    		myTopHat.setX(myTopHat.getX() - Settings.KEY_INPUT_SPEED);
 		    	}
 		    }
     	}
@@ -291,49 +322,109 @@ public class Controller extends Application {
 	    	updateLevel(3);    
 	    }
 	    else if (code == KeyCode.C) {
-	    	for (Iterator<Block> iterator = myLevel.blocks.iterator(); iterator.hasNext();) {
-	    		Block block = iterator.next();
+	    	for (int i = 0; i < myLevel.blocks.size(); i++) {
+	    		Block block = myLevel.blocks.get(i);
 	    		if (block.type == 1) {
 	    			myLevel.getChildren().remove(block);
-	    			iterator.remove();
+	    			myLevel.blocks.remove(i);
+	    			i -= 1;
 	    		}
 	    	}
 	    }
 	    else if (code == KeyCode.S) {
-	    	for (Iterator<Block> iterator = myLevel.blocks.iterator(); iterator.hasNext();) {
-	    		Block block = iterator.next();
+	    	for (int i = 0; i < myLevel.blocks.size(); i++) {
+	    		Block block = myLevel.blocks.get(i);
 	    		if (block.type == 2) {
 	    			myLevel.getChildren().remove(block);
-	    			iterator.remove();
+	    			myLevel.blocks.remove(i);
+	    			i -= 1;	    		
 	    		}
 	    	}
 	    }
 	    else if (code == KeyCode.G) {
-	    	for (Iterator<Block> iterator = myLevel.blocks.iterator(); iterator.hasNext();) {
-	    		Block block = iterator.next();
+	    	for (int i = 0; i < myLevel.blocks.size(); i++) {
+	    		Block block = myLevel.blocks.get(i);
 	    		if (block.type == 3) {
 	    			myLevel.getChildren().remove(block);
-	    			iterator.remove();
-	    		}
+	    			myLevel.blocks.remove(i);
+	    			i -= 1;
+	    			}
 	    	}
 	    }
 	    checkLevelDone();
     }
     
     private void goToLevel(int number) {
-    	Scene scene = setupGame(WIDTH, HEIGHT, BACKGROUND, number);
+    	Scene scene = setupGame(Settings.WIDTH, Settings.HEIGHT, Settings.BACKGROUND, number);
         myStage.setScene(scene);
         myStage.show();
     }
     
     private void displayMessage(Boolean won) {
-    	Results results = new Results(won);
     	showingMessage = true;
-		myScene = new Scene(results, WIDTH, HEIGHT, BACKGROUND);
+    	animation.pause();
+    	MessageView view = new MessageView(false, won);
+		myScene = new Scene(view, Settings.WIDTH, Settings.HEIGHT, Settings.SECONDARY_COLOR);
 	    myScene.setOnKeyPressed(e -> handleKeyInput(e.getCode()));
 		myStage.setScene(myScene);
 	    myStage.show();
     }
+    
+	public void determinePowerUp(Block block) {
+		Random rand = new Random();
+		int n = rand.nextInt(100) + 1;
+		if (n > Settings.PERCENT_POWER_UP) {
+			return;
+		}
+		PowerUp power = new PowerUp(block.getX(), block.getY() + block.getBoundsInParent().getHeight());
+		if (n <= Settings.PERCENT_POWER_UP_1 && !myTopHat.extended) {
+			power.setType(1);
+		}
+		else if (n > Settings.PERCENT_POWER_UP_1 && n <= Settings.PERCENT_POWER_UP_1 + Settings.PERCENT_POWER_UP_2) {
+			power.setType(2);
+		}
+		else if (n > Settings.PERCENT_POWER_UP_1 + Settings.PERCENT_POWER_UP_2 && n <= Settings.PERCENT_POWER_UP) {
+			power.setType(3);
+		}
+		myLevel.powerUps.add(power);
+		myLevel.getChildren().add(power);
+	}
+	
+	public void removePowerUps() {
+    	for (int i = 0; i < myLevel.powerUps.size(); i++) {
+    		PowerUp power = myLevel.powerUps.get(i);
+    		myLevel.getChildren().remove(power);
+    		myLevel.powerUps.remove(power);
+    		i -= 1;
+    	}
+	}
+	
+	public void addBunny() {
+		Bunny newBunny = new Bunny();
+		bunnies.add(newBunny);
+        myLevel.getChildren().add(newBunny);
+	}
+	
+	public void resetBunnies() {
+        while (!bunnies.isEmpty()) {
+        	Bunny bunny = bunnies.get(0);
+        	myLevel.getChildren().remove(bunny);
+        	bunnies.remove(bunny);
+        }
+		addBunny();
+	}
+	
+	public void destroyColumnOfBlocks(PowerUp power) {
+		for (int i = 0; i< myLevel.blocks.size(); i++) {
+    		Block block = myLevel.blocks.get(i);
+    		if (block.intersects(power.getX() + power.getBoundsInParent().getWidth() / 2, 0, 1, Settings.HEIGHT)) {
+				block.animate();
+				updatePoints(block.worth);
+        		myLevel.blocks.remove(i);
+        		i -= 1;
+    		}
+    	}
+	}
 
     /**
      * Start the program.

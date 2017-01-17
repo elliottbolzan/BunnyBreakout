@@ -1,4 +1,3 @@
-import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
@@ -6,14 +5,24 @@ import javafx.scene.text.Text;
 public class CustomText extends Text {
 	
 	public CustomText(double x, double y, String text, Boolean bold) {
-		super(x, y, text);
+		this.setX(x);
+		this.setY(y);
+		initialSetup(text, bold);
+	}
+	
+	public CustomText(String text, Boolean bold) {
+		initialSetup(text, bold);
+	}
+	
+	private void initialSetup(String text, Boolean bold) {
+		this.setText(text);
 		if (bold) {
-			super.setFont(Font.font(Controller.FONT, FontWeight.BOLD, Controller.FONT_SIZE));
+			this.setFont(Font.font(Settings.FONT, FontWeight.BOLD, Settings.FONT_SIZE));
 		}
 		else {
-			super.setFont(Font.font(Controller.FONT, Controller.FONT_SIZE));
+			this.setFont(Font.font(Settings.FONT, Settings.FONT_SIZE));
 		}
-        super.setFill(Color.FLORALWHITE);
+        this.setFill(Settings.WHITE);
 	}
 
 }

@@ -7,7 +7,7 @@ public class User {
 	
 	public User() {
 	    points = 0;
-	    lives = 3;
+	    lives = 10;
 	    level = 1;
 	}
 	
