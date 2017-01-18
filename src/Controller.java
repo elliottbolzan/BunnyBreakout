@@ -9,6 +9,7 @@ import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -20,7 +21,7 @@ public class Controller extends Application {
     private Timeline animation;
     private Status myStatus;
     private MessageView splashScreen;
-    private Boolean keysEnabled = false;
+    private Boolean keysEnabled = true;
     private Boolean splashing = true;
     private Boolean showingMessage = false;
     
@@ -43,8 +44,7 @@ public class Controller extends Application {
         s.show();
         myStage = s;
         // attach "game loop" to timeline to play it
-        KeyFrame frame = new KeyFrame(Duration.millis(Settings.MILLISECOND_DELAY),
-                                      e -> step(Settings.SECOND_DELAY));
+        KeyFrame frame = new KeyFrame(Duration.millis(Settings.MILLISECOND_DELAY), e -> step(Settings.SECOND_DELAY));
         animation = new Timeline();
         animation.setCycleCount(Timeline.INDEFINITE);
         animation.getKeyFrames().add(frame);
@@ -62,6 +62,7 @@ public class Controller extends Application {
         	myScene = new Scene(splashScreen, width, height, background);
     	}
     	else {
+    		keysEnabled = false;
             myLevel = new Level(levelNumber);
             myScene = new Scene(myLevel, width, height, background);
             myTopHat = new TopHat();
@@ -129,33 +130,36 @@ public class Controller extends Application {
     }
     
     private void checkBlocks (Bunny bunny) {
-    	for (int i = 0; i < myLevel.blocks.size(); i++) {
-    		Block block = myLevel.blocks.get(i);
-    		Boolean intersected = false;
-    		if (block.verticalWallsIntersected(bunny)) {
-    			bunny.goingRight = !bunny.goingRight;
-    			intersected = true;
-    		}
-    		else if (block.horizontalWallsIntersected(bunny)) {
-    			bunny.goingDown = !bunny.goingDown;
-    			intersected = true;
-    		}
-    		if (intersected) {
-    			block.hits -= 1;
-    			if (block.hits == 0) {
-    				block.animate();
-    				determinePowerUp(block);
-        			myLevel.blocks.remove(i);
-        			i -= 1;
-        			updatePoints(block.worth);
-        			checkLevelDone();
+	    	for (int i = 0; i < myLevel.blocks.size(); i++) {
+	    		Block block = myLevel.blocks.get(i);
+	    		Boolean intersected = false;
+	    		if (block.verticalWallsIntersected(bunny)) {
+	    			bunny.goingRight = !bunny.goingRight;
+	    			intersected = true;
+	    		}
+	    		else if (block.horizontalWallsIntersected(bunny)) {
+	    			bunny.goingDown = !bunny.goingDown;
+	    			intersected = true;
+	    		}
+	    		if (intersected) {
+	    			if (bunny.hitsEnabled) {
+		    			block.gotHit();
+		    			bunny.disableHits();
+	    				determinePowerUp(block);
+		    			if (block.hits == 0) {
+		    				block.animate();
+		        			myLevel.blocks.remove(i);
+		        			i -= 1;
+		        			updatePoints(block.worth);
+		        			checkLevelDone();
+		    			}
+		    			if (block.type != 1) {
+		    				block.updateImage();
+		    			}
+	    			}
         			return;
-    			}
-    			if (block.type != 1) {
-    				block.updateImage();
-    			}
-    		}
-    	}
+	    		}
+	    	}
     }
     
     private void checkPowerUps () {
@@ -211,7 +215,7 @@ public class Controller extends Application {
     
     private void checkLevelDone() {
     	if (myLevel.blocks.size() == 0) {
-    		updateLevel(myUser.level + 1);
+    		checkBonus(myLevel.timeElapsed());
     	}
     }
     
@@ -231,7 +235,7 @@ public class Controller extends Application {
     	myStatus.points.setText(myUser.pointsString());
     }
     
-    private void updateLevel(int levelNumber) {
+    void updateLevel(int levelNumber) {
     	if (levelNumber > Settings.LEVELS) {
     		displayMessage(true);
     		return;
@@ -254,13 +258,14 @@ public class Controller extends Application {
     
     private void startTimer() {
         Timeline timeline = new Timeline(new KeyFrame(
-                Duration.millis(1000),
+                Duration.millis(Settings.INTER_GAME_DELAY),
                 ae -> play()));
         timeline.play();
     }
     
     private void play() {
     	keysEnabled = true;
+    	myLevel.startStopwatch();
         animation.play();
     }
     
@@ -275,7 +280,7 @@ public class Controller extends Application {
     		}
     		return;
     	}
-    	if (showingMessage) {
+    	if (showingMessage && keysEnabled) {
     		showingMessage = false;
     		userSetup();
     		goToLevel(1);
@@ -361,6 +366,11 @@ public class Controller extends Application {
     }
     
     private void displayMessage(Boolean won) {
+    	keysEnabled = false;
+	    Timeline timeline = new Timeline(new KeyFrame(
+	            Duration.millis(Settings.MESSAGE_DELAY),
+	            ae -> enableKeys()));
+	    timeline.play(); 
     	showingMessage = true;
     	animation.pause();
     	MessageView view = new MessageView(false, won);
@@ -424,6 +434,24 @@ public class Controller extends Application {
         		i -= 1;
     		}
     	}
+	}
+	
+	public void enableKeys() {
+		keysEnabled = true;
+	}
+	
+	public void checkBonus(double time) {
+		if (time < myLevel.expectedDuration) {
+			int bonus = (int) (3 * (myLevel.expectedDuration - time));
+			myStatus.points.setFill(Color.ORANGERED);
+			updatePoints(bonus);
+		    Timeline timeline = new Timeline(new KeyFrame(
+		            Duration.millis(Settings.BONUS_ANIMATION_DURATION),
+		            ae -> updateLevel(myUser.level + 1)));
+		    timeline.play(); 
+			return;
+		}
+		updateLevel(myUser.level + 1);
 	}
 
     /**

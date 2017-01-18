@@ -12,7 +12,7 @@ public class Block extends ImageView {
 	public int type;
 	public int hits;
 	public int worth;
-	
+		
 	public Block(int typeNumber) {
 		type = typeNumber;
 		hits = type;
@@ -34,11 +34,12 @@ public class Block extends ImageView {
 	}
 	
 	public void updateImage() {
-		String path = new String(Integer.toString(type) + "_broken.gif");
 		if (type == 3 && hits == 1) {
-			path = new String(Integer.toString(type) + "_broken_twice.gif");
+			super.setImage(new Image(getClass().getClassLoader().getResourceAsStream(Integer.toString(type) + "_broken_twice.gif")));
 		}
-		super.setImage(new Image(path));
+		else {
+			super.setImage(new Image(getClass().getClassLoader().getResourceAsStream(Integer.toString(type) + "_broken.gif")));
+		}
 	}
 	
 	public Boolean verticalWallsIntersected(Bunny bunny) {
@@ -66,6 +67,10 @@ public class Block extends ImageView {
 		shrink.setToY(0.0);
 		shrink.setDuration(Duration.millis(400));
 		shrink.play();
+	}
+	
+	public void gotHit() {
+		hits -= 1;
 	}
 
 }

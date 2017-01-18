@@ -11,19 +11,22 @@ public class Level extends Group {
     public static final int VERTICAL_OFFSET = 15;
     public static final int CARROT_HORIZONTAL_SPACING = 20;
     public static final int OTHER_BLOCK_HORIZONTAL_SPACING = 2;
-    public static final int BUNNY_START_SPEED = 100;
-    public static final int BUNNY_INCREASE_INTERVAL = 20;
     
     public int BUNNY_X_SPEED;
     public int BUNNY_Y_SPEED;
+    
+    public int expectedDuration;
 
 	private ArrayList<String> configuration = new ArrayList<String>();
 	public ArrayList<Block> blocks = new ArrayList<Block>();
 	public ArrayList<PowerUp> powerUps = new ArrayList<PowerUp>();
+	
+	private double startTime;
 
 	public Level(int number) {
 		setSpeed(number);
-		String path = new String(System.getProperty("user.dir") + "/levels/" + Integer.toString(number));
+		setExpectedDuration(number);
+		String path = getClass().getClassLoader().getResource(Integer.toString(number)).getPath();
 		try {
 			for (String line: Files.readAllLines(Paths.get(path))) {
 			    configuration.add(line);
@@ -37,9 +40,21 @@ public class Level extends Group {
 	
 	public void setSpeed(int levelNumber) {
 		Random rand = new Random();
-		int maximum = 2 * (BUNNY_START_SPEED + (levelNumber - 1) * BUNNY_INCREASE_INTERVAL);
-		BUNNY_X_SPEED = rand.nextInt(2 * BUNNY_INCREASE_INTERVAL) - BUNNY_INCREASE_INTERVAL + maximum / 2;
+		int maximum = 2 * (Settings.BUNNY_START_SPEED + (levelNumber - 1) * Settings.BUNNY_INCREASE_INTERVAL);
+		BUNNY_X_SPEED = rand.nextInt(2 * Settings.BUNNY_INCREASE_INTERVAL) - Settings.BUNNY_INCREASE_INTERVAL + maximum / 2;
 		BUNNY_Y_SPEED = maximum - BUNNY_X_SPEED;
+	}
+	
+	public void setExpectedDuration(int number) {
+		if (number == 1) {
+			expectedDuration = Settings.LEVEL_1_BASELINE;
+		}
+		else if (number == 2) {
+			expectedDuration = Settings.LEVEL_2_BASELINE;
+		}
+		else if (number == 3) {
+			expectedDuration = Settings.LEVEL_3_BASELINE;
+		}
 	}
 	
 	private void parse() {
@@ -69,6 +84,14 @@ public class Level extends Group {
 		else {
 			return OTHER_BLOCK_HORIZONTAL_SPACING;
 		}
+	}
+	
+	public void startStopwatch() {
+		startTime = System.currentTimeMillis();
+	}
+	
+	public double timeElapsed() {
+		return (System.currentTimeMillis() - startTime) / 1000;
 	}
 
 }

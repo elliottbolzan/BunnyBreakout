@@ -21,7 +21,7 @@ class Message {
     	    justify = true;
     	}
     	else {
-    		title_Y = 200;
+    		title_Y = Settings.HEIGHT / 2;
     		instructions_Y = Settings.HEIGHT - 40;
     	    firstPage = "Press any key to play again.";
     	    justify = false;

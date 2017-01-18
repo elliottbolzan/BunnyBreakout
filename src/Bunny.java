@@ -1,5 +1,8 @@
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.util.Duration;
 
 import java.util.Random;
 
@@ -11,6 +14,7 @@ public class Bunny extends ImageView {
 
     public Boolean goingRight;
     public Boolean goingDown = false;
+    public Boolean hitsEnabled = true;
     
     public Bunny() {
 		Image image = new Image(getClass().getClassLoader().getResourceAsStream(BUNNY_IMAGE));
@@ -34,5 +38,17 @@ public class Bunny extends ImageView {
     	super.setX((Settings.WIDTH - Controller.myTopHat.getWidth()) / 2 + BUNNY_X_OFFSET);
         super.setY(Settings.HEIGHT - Controller.myTopHat.OFFSET - Controller.myTopHat.getHeight() - super.getBoundsInParent().getHeight() - BUNNY_Y_OFFSET);
     }
+    
+	public void disableHits() {
+		hitsEnabled = false;
+	    Timeline timeline = new Timeline(new KeyFrame(
+	            Duration.millis(Settings.HIT_TIMEOUT),
+	            ae -> enableHits()));
+	    timeline.play();   
+	}
+	
+	public void enableHits() {
+		hitsEnabled = true;
+	}
     
 }

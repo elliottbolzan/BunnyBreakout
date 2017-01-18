@@ -11,8 +11,8 @@ public class TopHat {
 	
 	public final int OFFSET = 10;
 	public final int HAT_DEPTH = 30;
-	public final int BRIM_WIDTH = 25;
-	public final int BRIM_HEIGHT = 3;
+	public final int BRIM_WIDTH = 15;
+	public final int BRIM_HEIGHT = 6;
 	
 	private Rectangle leftBrim;
 	private Rectangle core;

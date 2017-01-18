@@ -11,6 +11,10 @@ public class Settings {
     public static final double SECOND_DELAY = 1.0 / FRAMES_PER_SECOND;
     public static final int KEY_INPUT_SPEED = 20;
     
+    public static final int HIT_TIMEOUT = 10;
+    public static final int INTER_GAME_DELAY = 1000;
+    public static final int MESSAGE_DELAY = 750;
+    
     public static final Paint BACKGROUND = Color.BLACK;
     public static final Paint SECONDARY_COLOR = Color.TURQUOISE;
 	public static Color WHITE = Color.WHITESMOKE;
@@ -23,4 +27,13 @@ public class Settings {
     public static final int PERCENT_POWER_UP_3 = 4; 
     public static final int PERCENT_POWER_UP = PERCENT_POWER_UP_1 + PERCENT_POWER_UP_2 + PERCENT_POWER_UP_3;
    
+    public static final int BUNNY_START_SPEED = 100;
+    public static final int BUNNY_INCREASE_INTERVAL = 20;
+    
+    public static final int LEVEL_1_BASELINE = 200;
+    public static final int LEVEL_2_BASELINE = 70;
+    public static final int LEVEL_3_BASELINE = 80;
+    
+    public static final int BONUS_ANIMATION_DURATION = 1000;
+    
 }
