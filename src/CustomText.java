@@ -5,24 +5,24 @@ import javafx.scene.text.Text;
 public class CustomText extends Text {
 	
 	public CustomText(double x, double y, String text, Boolean bold) {
-		this.setX(x);
-		this.setY(y);
-		initialSetup(text, bold);
+		this(text, bold);
+		setX(x);
+		setY(y);
 	}
 	
 	public CustomText(String text, Boolean bold) {
-		initialSetup(text, bold);
+		setText(text);
+		setStyle(bold);
 	}
 	
-	private void initialSetup(String text, Boolean bold) {
-		this.setText(text);
+	private void setStyle(Boolean bold) {
 		if (bold) {
-			this.setFont(Font.font(Settings.FONT, FontWeight.BOLD, Settings.FONT_SIZE));
+			setFont(Font.font(Settings.FONT, FontWeight.BOLD, Settings.FONT_SIZE));
 		}
 		else {
-			this.setFont(Font.font(Settings.FONT, Settings.FONT_SIZE));
+			setFont(Font.font(Settings.FONT, Settings.FONT_SIZE));
 		}
-        this.setFill(Settings.WHITE);
+        setFill(Settings.WHITE);
 	}
 
 }

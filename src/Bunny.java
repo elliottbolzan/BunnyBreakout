@@ -7,36 +7,95 @@ import javafx.util.Duration;
 import java.util.Random;
 
 public class Bunny extends ImageView {
-	
-    public static final String BUNNY_IMAGE = "bunny.gif";
-    public static final int BUNNY_X_OFFSET = 12;
-    public static final int BUNNY_Y_OFFSET = 2;
 
-    public Boolean goingRight;
-    public Boolean goingDown = false;
-    public Boolean hitsEnabled = true;
+    private Boolean goingRight;
+    private Boolean goingDown = false;
+    private Boolean hitsEnabled = true;
     
     public Bunny() {
-		Image image = new Image(getClass().getClassLoader().getResourceAsStream(BUNNY_IMAGE));
-		super.setImage(image);
+		setImage(new Image(getClass().getClassLoader().getResourceAsStream(Settings.BUNNY_IMAGE)));
+		goingRight = startDirection();
 		center();
-		Random rand = new Random();
-		int option = rand.nextInt(2);
-		if (option == 0) {
-			goingRight = true;
-		}
-		else {
-			goingRight = false;
-		}
 	}
     
-    public double bottom() {
-    	return super.getY() + super.getBoundsInParent().getHeight();
+    public Boolean getGoingRight() {
+		return goingRight;
+	}
+
+	public Boolean getGoingDown() {
+		return goingDown;
+	}
+
+	public Boolean getHitsEnabled() {
+		return hitsEnabled;
+	}
+
+	public void setGoingRight(Boolean goingRight) {
+		this.goingRight = goingRight;
+	}
+
+	public void setGoingDown(Boolean goingDown) {
+		this.goingDown = goingDown;
+	}
+
+	public void setHitsEnabled(Boolean hitsEnabled) {
+		this.hitsEnabled = hitsEnabled;
+	}
+
+	private Boolean startDirection() {
+		return new Random().nextInt(2) == 0;
+    }
+    
+    public void updateLocation(double elapsedTime, double x_speed, double y_speed) {
+    	updateX(elapsedTime, x_speed);
+    	updateY(elapsedTime, y_speed);
+    }
+        
+    private void updateX(double elapsedTime, double x_speed) {
+        if (goingRight) {
+        	setX(getX() + x_speed * elapsedTime);
+        }
+        else {
+        	setX(getX() - x_speed * elapsedTime);
+        }
+    }
+    
+    private void updateY(double elapsedTime, double y_speed) {
+        if (goingDown) {
+        	setY(getY() + y_speed * elapsedTime);
+        }
+        else {
+        	setY(getY() - y_speed * elapsedTime);
+        }
+    }
+    
+    public void checkWalls() {
+    	checkLeftWall();
+    	checkRightWall();
+    	checkTopWall();
+    }
+    
+    private void checkLeftWall() {
+    	if (getX() <= 0) {
+    		goingRight = true;
+    	}
+    }
+
+    private void checkRightWall() {
+    	if (getBoundsInParent().getMaxX() >= Settings.WIDTH) {
+    		goingRight = false;
+    	}
+    }
+
+    private void checkTopWall() {
+    	if (getY() <= Status.PADDING) {
+    		goingDown = true;
+    	}
     }
     
     public void center() {
-    	super.setX((Settings.WIDTH - Controller.myTopHat.getWidth()) / 2 + BUNNY_X_OFFSET);
-        super.setY(Settings.HEIGHT - Controller.myTopHat.OFFSET - Controller.myTopHat.getHeight() - super.getBoundsInParent().getHeight() - BUNNY_Y_OFFSET);
+    	setX(Settings.WIDTH / 2 - Settings.BUNNY_X_OFFSET);
+        setY(Settings.HEIGHT - Settings.HAT_OFFSET - Settings.HAT_SIZE - getBoundsInParent().getHeight() - Settings.BUNNY_Y_OFFSET);
     }
     
 	public void disableHits() {
@@ -47,7 +106,7 @@ public class Bunny extends ImageView {
 	    timeline.play();   
 	}
 	
-	public void enableHits() {
+	private void enableHits() {
 		hitsEnabled = true;
 	}
     
