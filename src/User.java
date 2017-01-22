@@ -1,3 +1,7 @@
+
+/**
+* Encapsulates the user's current state.
+*/
 public class User {
 
 	private int points;

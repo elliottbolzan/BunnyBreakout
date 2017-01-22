@@ -2,6 +2,9 @@ import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.text.TextAlignment;
 
+/**
+ * Encapsulates possible messages: splash screens or results.
+ */
 class Message {
 
 	private int title_Y;
@@ -55,6 +58,7 @@ class Message {
 		firstPage = "Bounce your bunny off your top hat." + "\n\nMake it eat all the carrots, soil, and grass."
 				+ "\n\nTo move your top hat left and right, use the ← and → keys."
 				+ "\n\nLand in the middle of the top hat? Bounce in the expected direction. Land on the brims of the hat? Bounce back where you came from."
+				+ "\n\nExit the screen on one side to appear on the other."
 				+ "\n\nPress any key to continue.";
 		secondPage = "Here are a few cheat codes:"
 				+ "\n\nPress the space bar to extend your top hat the length of the screen."
@@ -78,6 +82,9 @@ class Message {
 
 }
 
+/**
+ * Returns a message, with an optional second page.
+ */
 public class MessageView extends Group {
 
 	private CustomText instructions;
@@ -117,6 +124,9 @@ public class MessageView extends Group {
 		add(instructions);
 	}
 
+	/**
+	 * Trigger appearance of second page.
+	 */
 	public void showSecondPage() {
 		onSecondPage = true;
 		instructions.setText(message.getSecondPage());

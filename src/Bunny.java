@@ -8,17 +8,17 @@ import java.util.Random;
 
 public class Bunny extends ImageView {
 
-    private Boolean goingRight;
-    private Boolean goingDown = false;
-    private Boolean hitsEnabled = true;
-    
-    public Bunny() {
+	private Boolean goingRight;
+	private Boolean goingDown = false;
+	private Boolean hitsEnabled = true;
+
+	public Bunny() {
 		setImage(new Image(getClass().getClassLoader().getResourceAsStream(Settings.BUNNY_IMAGE)));
 		goingRight = startDirection();
 		center();
 	}
-    
-    public Boolean getGoingRight() {
+
+	public Boolean getGoingRight() {
 		return goingRight;
 	}
 
@@ -42,72 +42,85 @@ public class Bunny extends ImageView {
 		this.hitsEnabled = hitsEnabled;
 	}
 
+	/**
+	 * Randomly determines which direction to start in.
+	 */
 	private Boolean startDirection() {
 		return new Random().nextInt(2) == 0;
-    }
-    
-    public void updateLocation(double elapsedTime, double x_speed, double y_speed) {
-    	updateX(elapsedTime, x_speed);
-    	updateY(elapsedTime, y_speed);
-    }
-        
-    private void updateX(double elapsedTime, double x_speed) {
-        if (goingRight) {
-        	setX(getX() + x_speed * elapsedTime);
-        }
-        else {
-        	setX(getX() - x_speed * elapsedTime);
-        }
-    }
-    
-    private void updateY(double elapsedTime, double y_speed) {
-        if (goingDown) {
-        	setY(getY() + y_speed * elapsedTime);
-        }
-        else {
-        	setY(getY() - y_speed * elapsedTime);
-        }
-    }
-    
-    public void checkWalls() {
-    	checkLeftWall();
-    	checkRightWall();
-    	checkTopWall();
-    }
-    
-    private void checkLeftWall() {
-    	if (getX() <= 0) {
-    		goingRight = true;
-    	}
-    }
+	}
 
-    private void checkRightWall() {
-    	if (getBoundsInParent().getMaxX() >= Settings.WIDTH) {
-    		goingRight = false;
-    	}
-    }
+	public void updateLocation(double elapsedTime, double x_speed, double y_speed) {
+		updateX(elapsedTime, x_speed);
+		updateY(elapsedTime, y_speed);
+	}
 
-    private void checkTopWall() {
-    	if (getY() <= Status.PADDING) {
-    		goingDown = true;
-    	}
-    }
-    
-    public void center() {
-    	setX(Settings.WIDTH / 2 - Settings.BUNNY_X_OFFSET);
-        setY(Settings.HEIGHT - Settings.HAT_OFFSET - Settings.HAT_SIZE - getBoundsInParent().getHeight() - Settings.BUNNY_Y_OFFSET);
-    }
-    
+	private void updateX(double elapsedTime, double x_speed) {
+		if (goingRight) {
+			setX(getX() + x_speed * elapsedTime);
+		} else {
+			setX(getX() - x_speed * elapsedTime);
+		}
+	}
+
+	private void updateY(double elapsedTime, double y_speed) {
+		if (goingDown) {
+			setY(getY() + y_speed * elapsedTime);
+		} else {
+			setY(getY() - y_speed * elapsedTime);
+		}
+	}
+
+	public void checkWalls() {
+		checkLeftWall();
+		checkRightWall();
+		checkTopWall();
+	}
+
+	private void checkLeftWall() {
+		if (getX() <= 0) {
+			goingRight = true;
+		}
+	}
+
+	private void checkRightWall() {
+		if (getBoundsInParent().getMaxX() >= Settings.WIDTH) {
+			goingRight = false;
+		}
+	}
+
+	private void checkTopWall() {
+		if (getY() <= Status.PADDING) {
+			goingDown = true;
+		}
+	}
+
+	public void center() {
+		setX(Settings.WIDTH / 2 - Settings.BUNNY_X_OFFSET);
+		setY(Settings.HEIGHT - Settings.HAT_OFFSET - Settings.HAT_SIZE - getBoundsInParent().getHeight()
+				- Settings.BUNNY_Y_OFFSET);
+	}
+
+	/**
+	 * Without this feature, blocks seem to vanish when destroyed in very rapid
+	 * succession.
+	 */
 	public void disableHits() {
 		hitsEnabled = false;
-	    Timeline timeline = new Timeline(new KeyFrame(
-	            Duration.millis(Settings.HIT_TIMEOUT),
-	            ae -> enableHits()));
-	    timeline.play();   
+		Timeline timeline = new Timeline(new KeyFrame(Duration.millis(Settings.HIT_TIMEOUT), ae -> hitsEnabled = true));
+		timeline.play();
 	}
-	
-	private void enableHits() {
-		hitsEnabled = true;
+
+	public void bounceOffPaddle(TopHat hat) {
+		if (getBoundsInParent().getMaxY() <= hat.getY() + Settings.BRIM_HEIGHT && hat.intersects(this)) {
+			setGoingDown(false);
+			if (hat.brimIntersected(this) && !hat.coreIntersected(this)) {
+				setGoingRight(!goingRight);
+			}
+		}
 	}
-    
+
+	public Boolean feelThrough() {
+		return getY() >= Settings.HEIGHT;
+	}
+
 }

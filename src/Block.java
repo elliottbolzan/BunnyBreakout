@@ -26,50 +26,55 @@ public class Block extends ImageView {
 	public int getWorth() {
 		return worth;
 	}
-	
+
 	public double getMinX() {
-		return this.getBoundsInParent().getMinX();
+		return getBoundsInParent().getMinX();
 	}
 
 	public double getMaxX() {
-		return this.getBoundsInParent().getMaxX();
+		return getBoundsInParent().getMaxX();
 	}
 
 	public double getMinY() {
-		return this.getBoundsInParent().getMinY();
+		return getBoundsInParent().getMinY();
 	}
 
 	public double getMaxY() {
-		return this.getBoundsInParent().getMaxY();
+		return getBoundsInParent().getMaxY();
 	}
 
 	public double getWidth() {
-		return this.getBoundsInParent().getWidth();
+		return getBoundsInParent().getWidth();
 	}
 
 	public double getHeight() {
-		return this.getBoundsInParent().getHeight();
+		return getBoundsInParent().getHeight();
 	}
 
 	public void setWorth() {
-		if (this.type == 1) {
-			this.worth = Settings.BLOCK_1_WORTH;
+		if (type == 1) {
+			worth = Settings.BLOCK_1_WORTH;
 		} else if (type == 2) {
-			this.worth = Settings.BLOCK_2_WORTH;
+			worth = Settings.BLOCK_2_WORTH;
 		} else if (type == 3) {
-			this.worth = Settings.BLOCK_3_WORTH;
+			worth = Settings.BLOCK_3_WORTH;
 		}
 	}
 
 	public void setImage(String name) {
-		this.setImage(new Image(getClass().getClassLoader().getResourceAsStream(name)));
+		setImage(new Image(getClass().getClassLoader().getResourceAsStream(name)));
 	}
 
-	public void updateImage() {
-		if (this.type == 3 && this.hits == 1) {
-			setImage(Integer.toString(type) + "_broken_twice.gif");
-		} else {
-			setImage(Integer.toString(type) + "_broken.gif");
+	/**
+	 * Make blocks look broken.
+	 */
+	private void updateImage() {
+		if (type != 1) {
+			if (type == 3 && hits == 1) {
+				setImage(Integer.toString(type) + "_broken_twice.gif");
+			} else {
+				setImage(Integer.toString(type) + "_broken.gif");
+			}
 		}
 	}
 
@@ -83,6 +88,9 @@ public class Block extends ImageView {
 				|| bunny.intersects(getMinX(), getMinY(), getWidth(), 1);
 	}
 
+	/**
+	 * Called upon destruction.
+	 */
 	public void startShrinking() {
 		final ScaleTransition shrink = new ScaleTransition();
 		shrink.setNode(this);
@@ -96,6 +104,7 @@ public class Block extends ImageView {
 
 	public void gotHit() {
 		hits -= 1;
+		updateImage();
 	}
 
 }

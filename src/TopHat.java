@@ -4,9 +4,13 @@ import java.util.Arrays;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
+/**
+ * Create a bunny-themed paddle, composed of three rectangles.
+ */
 public class TopHat {
 
 	private Rectangle leftBrim;
@@ -21,6 +25,7 @@ public class TopHat {
 		core = new Rectangle(Settings.HAT_SIZE, Settings.HAT_SIZE);
 		rightBrim = new Rectangle(Settings.BRIM_WIDTH, Settings.BRIM_HEIGHT);
 		rectangles.addAll(Arrays.asList(leftBrim, core, rightBrim));
+		setColor();
 		center();
 	}
 
@@ -35,7 +40,7 @@ public class TopHat {
 	}
 
 	public double getY() {
-		return leftBrim.getY();
+		return leftBrim.getBoundsInParent().getMinY();
 	}
 
 	public void setY(double value) {
@@ -75,6 +80,12 @@ public class TopHat {
 		this.extended = extended;
 	}
 
+	private void setColor() {
+		for (Rectangle rect : rectangles) {
+			rect.setFill(Settings.WHITE);
+		}
+	}
+
 	public void center() {
 		core.setX((Settings.WIDTH - core.getBoundsInParent().getWidth()) / 2);
 		core.setY(Settings.HEIGHT - core.getHeight() - Settings.HAT_OFFSET);
@@ -84,12 +95,18 @@ public class TopHat {
 		rightBrim.setY(core.getY());
 	}
 
+	/**
+	 * Extend the top hat the full width of the screen.
+	 */
 	public void extend() {
 		extended = true;
 		setWidth(Settings.WIDTH);
 		center();
 	}
 
+	/**
+	 * Double the top hat.
+	 */
 	public void doubleSize() {
 		if (!extended) {
 			extended = true;
@@ -103,6 +120,30 @@ public class TopHat {
 	public void resetSize() {
 		extended = false;
 		setWidth(Settings.HAT_SIZE + 2 * Settings.BRIM_WIDTH);
+	}
+
+	public void move(KeyCode code) {
+		if (code == KeyCode.RIGHT) {
+			moveRight();
+		} else if (code == KeyCode.LEFT) {
+			moveLeft();
+		}
+	}
+
+	private void moveRight() {
+		if (Settings.WIDTH - getX() <= Settings.KEY_INPUT_SPEED) {
+			setX(0);
+		} else {
+			setX(getX() + Settings.KEY_INPUT_SPEED);
+		}
+	}
+
+	private void moveLeft() {
+		if (getX() + getWidth() <= Settings.KEY_INPUT_SPEED) {
+			setX(Settings.WIDTH - getWidth());
+		} else {
+			setX(getX() - Settings.KEY_INPUT_SPEED);
+		}
 	}
 
 	public Boolean brimIntersected(ImageView view) {

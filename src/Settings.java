@@ -1,17 +1,20 @@
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 
+/**
+ * A control panel for the entire project.
+ */
 public class Settings {
 	
 	public static final String TITLE = "BunnyBreakout";
     public static final int WIDTH = 400;
     public static final int HEIGHT = 480;
-    public static final int FRAMES_PER_SECOND = 400;
+    public static final int FRAMES_PER_SECOND = 60;
     public static final int MILLISECOND_DELAY = 1000 / FRAMES_PER_SECOND;
     public static final double SECOND_DELAY = 1.0 / FRAMES_PER_SECOND;
     public static final int KEY_INPUT_SPEED = 20;
     
-    public static final int HIT_TIMEOUT = 5;
+    public static final int HIT_TIMEOUT = 10;
     public static final int INTER_GAME_DELAY = 800;
     public static final int MESSAGE_DELAY = 750;
     public static final int BONUS_ANIMATION_DURATION = 1500;
@@ -38,6 +41,7 @@ public class Settings {
     public static final int PERCENT_POWER_UP_2 = 8; 
     public static final int PERCENT_POWER_UP_3 = 4; 
     public static final int PERCENT_POWER_UP = PERCENT_POWER_UP_1 + PERCENT_POWER_UP_2 + PERCENT_POWER_UP_3;
+    public static final int CLEAR_BLOCKS_OF_WIDTH = 20;
     
 	public static final int HAT_OFFSET = 10;
 	public static final int HAT_SIZE = 30;
