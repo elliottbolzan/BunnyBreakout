@@ -147,15 +147,17 @@ public class TopHat {
 	}
 
 	public Boolean brimIntersected(ImageView view) {
-		return leftBrim.intersects(view.getBoundsInParent()) || rightBrim.intersects(view.getBoundsInParent());
+		return intersects(view) && !coreIntersected(view);
 	}
 
 	public Boolean coreIntersected(ImageView view) {
-		return core.intersects(view.getBoundsInParent());
+		return core.intersects(view.getX() + view.getBoundsInParent().getWidth() / 2, view.getY(), 1,
+				view.getBoundsInParent().getHeight());
 	}
 
 	public Boolean intersects(ImageView view) {
-		return brimIntersected(view) || coreIntersected(view);
+		return leftBrim.intersects(view.getBoundsInParent()) || rightBrim.intersects(view.getBoundsInParent())
+				|| core.intersects(view.getBoundsInParent());
 	}
 
 }
