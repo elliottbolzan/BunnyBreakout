@@ -185,6 +185,7 @@ public class BunnyBreakout extends Application {
 	 * Check whether a message was dismissed using a key.
 	 */
 	private Boolean startKey() {
+		Boolean displaying = showingSplashScreen || (showingMessage && keysEnabled) ;
 		if (showingSplashScreen) {
 			if (!mySplashScreen.getOnSecondPage()) {
 				mySplashScreen.showSecondPage();
@@ -198,7 +199,7 @@ public class BunnyBreakout extends Application {
 			userSetup();
 			goToLevel(1);
 		}
-		return showingSplashScreen || (showingMessage && keysEnabled);
+		return displaying;
 	}
 
 	private void cheatCodes(KeyCode code) {
