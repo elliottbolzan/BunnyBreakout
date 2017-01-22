@@ -14,7 +14,7 @@ public class Settings {
 	public static final double SECOND_DELAY = 1.0 / FRAMES_PER_SECOND;
 	public static final int KEY_INPUT_SPEED = 20;
 
-	public static final int HIT_TIMEOUT = 15;
+	public static final int HIT_TIMEOUT = 6 * MILLISECOND_DELAY;
 	public static final int INTER_GAME_DELAY = 800;
 	public static final int MESSAGE_DELAY = 750;
 	public static final int BONUS_ANIMATION_DURATION = 1500;
