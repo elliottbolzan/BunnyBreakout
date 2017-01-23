@@ -31,3 +31,4 @@ BunnyBreakout
 **Impressions of the assignment:**
 
 I found the assignment interesting and relatively fun to design. I probably should have worked a bit less on it, hour-wise. I'm not certain much could be made to improve the assignment itself: many of the responsibilities and decisions are given to the coder, and as such, the improvements can be made by the programmer. I appreciated how our work in the first recitation was seminal to our project. This made the task less daunting, while leaving us to do most of the work, and I felt that was a good combination.
+One thing I was unable to find for the assignment on the website were the Formatting Rules, the CheckStyle rules, and the CleanUp rules. Maybe these should be added in the future.
