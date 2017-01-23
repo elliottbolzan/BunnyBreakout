@@ -1,3 +1,7 @@
+/**
+ * Elliott Bolzan, January 2017
+ */
+
 import java.net.URL;
 
 import javafx.animation.KeyFrame;
@@ -12,6 +16,9 @@ import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+/**
+ * Controller for the application. Configures user and views.
+ */
 public class BunnyBreakout extends Application {
 
 	private Stage myStage;
@@ -39,11 +46,17 @@ public class BunnyBreakout extends Application {
 		playSong();
 	}
 
+	/**
+	 * Configure user.
+	 */
 	private void userSetup() {
 		myUser = new User();
 		myStatus = new Status(myUser.livesString(), myUser.levelString(), myUser.pointsString());
 	}
 
+	/**
+	 * Create animation - without starting it.
+	 */
 	private void createAnimation() {
 		KeyFrame frame = new KeyFrame(Duration.millis(Settings.MILLISECOND_DELAY), e -> step(Settings.SECOND_DELAY));
 		myAnimation = new Timeline();
@@ -60,11 +73,19 @@ public class BunnyBreakout extends Application {
 		myStage.show();
 	}
 
+	/**
+	 * Creates the splash screen.
+	 * @return a Scene containing the splash screen.
+	 */
 	private Scene setupSplashScreen(int width, int height, Paint background) {
 		mySplashScreen = new MessageView(true, false);
 		return new Scene(mySplashScreen, width, height, background);
 	}
 
+	/**
+	 * Creates a level of the game.
+	 * @return a Scene containing a level of the game.
+	 */
 	private Scene setupLevel(int width, int height, Paint background, int levelNumber) {
 		keysEnabled = false;
 		myLevel = new Level(levelNumber);
@@ -73,6 +94,9 @@ public class BunnyBreakout extends Application {
 		return new Scene(myLevel, width, height, background);
 	}
 
+	/**
+	 * Add the status elements to the level.
+	 */
 	private void addStatus() {
 		myLevel.add(myStatus.getLevel());
 		myLevel.add(myStatus.getLives());
@@ -80,6 +104,9 @@ public class BunnyBreakout extends Application {
 		myLevel.add(myStatus.getLine());
 	}
 
+	/**
+	 * Show a message to the user.
+	 */
 	private void displayMessage(Boolean won) {
 		keysEnabled = false;
 		Timeline timeline = new Timeline(
@@ -91,6 +118,9 @@ public class BunnyBreakout extends Application {
 		attachScene(new Scene(view, Settings.WIDTH, Settings.HEIGHT, Settings.SECONDARY_COLOR));
 	}
 
+	/**
+	 * Play a song continuously.
+	 */
 	private void playSong() {
 		URL resource = getClass().getResource("song.mp3");
 		Media media = new Media(resource.toString());
@@ -119,11 +149,17 @@ public class BunnyBreakout extends Application {
 		timeline.play();
 	}
 
+	/**
+	 * Used to start animation.
+	 */
 	private void startGameplay() {
 		keysEnabled = true;
 		myAnimation.play();
 	}
 
+	/**
+	 * Check whether the level is finished.
+	 */
 	private void checkLevelDone() {
 		if (myLevel.done()) {
 			updateLevel(myUser.getLevel() + 1);
@@ -131,6 +167,9 @@ public class BunnyBreakout extends Application {
 		}
 	}
 
+	/**
+	 * Update lives when the user misses the bunny.
+	 */
 	private void updateLives() {
 		myUser.removeLife();
 		myStatus.getLives().setText(myUser.livesString());
@@ -141,11 +180,17 @@ public class BunnyBreakout extends Application {
 		}
 	}
 
+	/**
+	 * Update the user's points.
+	 */
 	private void updatePoints(int amount) {
 		myUser.addPoints(amount);
 		myStatus.getPoints().setText(myUser.pointsString());
 	}
 
+	/**
+	 * Update the user's level.
+	 */
 	private void updateLevel(int levelNumber) {
 		if (levelNumber > Settings.LEVELS) {
 			displayMessage(true);
@@ -157,10 +202,16 @@ public class BunnyBreakout extends Application {
 		reset();
 	}
 
+	/**
+	 * Go to a certain level.
+	 */
 	private void goToLevel(int number) {
 		attachScene(setupLevel(Settings.WIDTH, Settings.HEIGHT, Settings.BACKGROUND, number));
 	}
 
+	/**
+	 * Add bonus to user's tally.
+	 */
 	private void addBonus() {
 		int bonus = myLevel.getBonus();
 		if (bonus != 0) {
@@ -172,6 +223,9 @@ public class BunnyBreakout extends Application {
 		}
 	}
 
+	/**
+	 * Handle keyboard.
+	 */
 	private void handleKeyInput(KeyCode code) {
 		if (!startKey()) {
 			if (keysEnabled) {
@@ -202,6 +256,9 @@ public class BunnyBreakout extends Application {
 		return displaying;
 	}
 
+	/**
+	 * Detect cheat codes.
+	 */
 	private void cheatCodes(KeyCode code) {
 		if (code == KeyCode.SPACE) {
 			keysEnabled = false;

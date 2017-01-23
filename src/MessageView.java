@@ -1,3 +1,7 @@
+/**
+ * Elliott Bolzan, January 2017
+ */
+
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.text.TextAlignment;
@@ -15,6 +19,10 @@ class Message {
 	private String secondPage;
 	private Boolean justify;
 
+	/**
+	 * @param splash whether this message is a splash message.
+	 * @param whether the user just won.
+	 */
 	public Message(Boolean splash, Boolean won) {
 		if (splash) {
 			setupSplash();
@@ -23,34 +31,58 @@ class Message {
 		}
 	}
 
+	/**
+	 * @return the Y-coordinate of the title.
+	 */
 	public int getTitleY() {
 		return title_Y;
 	}
 
+	/**
+	 * @return the Y-coordinate of the instructions.
+	 */
 	public int getInstructionsY() {
 		return instructions_Y;
 	}
 
+	/**
+	 * @return the wrapping width for the text.
+	 */
 	public int getWrappingWidth() {
 		return wrapping_width;
 	}
 
+	/**
+	 * @return the title String.
+	 */
 	public String getTitle() {
 		return title;
 	}
 
+	/**
+	 * @return the first page text.
+	 */
 	public String getFirstPage() {
 		return firstPage;
 	}
 
+	/**
+	 * @return the second page text.
+	 */
 	public String getSecondPage() {
 		return secondPage;
 	}
 
+	/**
+	 * @return whether the text is justified.
+	 */
 	public Boolean getJustify() {
 		return justify;
 	}
 
+	/**
+	 * Sets values for message when on splash screen.
+	 */
 	private void setupSplash() {
 		title_Y = 40;
 		instructions_Y = 90;
@@ -68,6 +100,9 @@ class Message {
 		justify = true;
 	}
 
+	/**
+	 * Sets values for message when displaying results.
+	 */
 	private void setupResults(Boolean won) {
 		title_Y = Settings.HEIGHT / 2;
 		instructions_Y = Settings.HEIGHT - 40;
@@ -91,6 +126,10 @@ public class MessageView extends Group {
 	private Boolean onSecondPage = false;
 	private Message message;
 
+	/**
+	 * @param splash whether this message is a splash message.
+	 * @param whether the user just won.
+	 */
 	public MessageView(Boolean splash, Boolean won) {
 		message = new Message(splash, won);
 		onSecondPage = !splash;
@@ -98,14 +137,23 @@ public class MessageView extends Group {
 		setupInstructions();
 	}
 
+	/**
+	 * @return whether the user is viewing the second page.
+	 */
 	public Boolean getOnSecondPage() {
 		return onSecondPage;
 	}
 
+	/**
+	 * Shortcut to add to Group.
+	 */
 	private void add(Node e) {
 		getChildren().add(e);
 	}
 
+	/**
+	 * Sets up the title label.
+	 */
 	private void setupTitle() {
 		CustomText topText = new CustomText(message.getTitle(), true);
 		topText.setX((Settings.WIDTH - topText.getBoundsInParent().getWidth()) / 2);
@@ -113,6 +161,9 @@ public class MessageView extends Group {
 		super.getChildren().add(topText);
 	}
 
+	/**
+	 * Sets up the instruction label.
+	 */
 	private void setupInstructions() {
 		instructions = new CustomText(message.getFirstPage(), false);
 		if (message.getJustify()) {

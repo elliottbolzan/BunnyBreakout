@@ -1,3 +1,8 @@
+
+/**
+ * Elliott Bolzan, January 2017
+ */
+
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 
@@ -37,8 +42,7 @@ public class Settings {
 	public static final int BLOCK_2_WORTH = 10;
 	public static final int BLOCK_3_WORTH = 5;
 
-	// These percentages had to be modified from my plan. I was simply giving
-	// too many power-ups!
+	// These percentages had to be modified from my plan. I was giving too many power-ups!
 	public static final int PERCENT_POWER_UP_1 = 16;
 	public static final int PERCENT_POWER_UP_2 = 8;
 	public static final int PERCENT_POWER_UP_3 = 4;

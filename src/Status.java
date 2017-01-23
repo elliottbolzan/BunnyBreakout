@@ -1,5 +1,13 @@
+
+/**
+ * Elliott Bolzan, January 2017
+ */
+
 import javafx.scene.shape.Rectangle;
 
+/**
+ * A class that contains the elements to display the user's status.
+ */
 public class Status {
 
 	public static final int TEXT_HEIGHT = 30;
@@ -26,18 +34,30 @@ public class Status {
 		line.setFill(Settings.SECONDARY_COLOR);
 	}
 
+	/**
+	 * @return a CustomText object that displays the user's lives.
+	 */
 	public CustomText getLives() {
 		return lives;
 	}
 
+	/**
+	 * @return a CustomText object that displays the user's level.
+	 */
 	public CustomText getLevel() {
 		return level;
 	}
 
+	/**
+	 * @return a CustomText object that displays the user's points.
+	 */
 	public CustomText getPoints() {
 		return points;
 	}
 
+	/**
+	 * @return a Rectangle that serves as a dividing line.
+	 */
 	public Rectangle getLine() {
 		return line;
 	}
