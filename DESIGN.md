@@ -1,6 +1,8 @@
 Design Choices
 =============
 
+I apologize for submitting this design file a few hours late. I was under the impression it was part of the Analysis part. My bad!
+
 **High-level design goals of BunnyBreakout:**
 In BunnyBreakout, I sought to have one controller class that starts the program, creates the user,  displays his status, and presents different views (levels, splash screen, and messages): *BunnyBreakout*. From there, it became clear I needed more classes:
 

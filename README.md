@@ -1,6 +1,8 @@
 BunnyBreakout
 =============
 
+I apologize for submitting this README a few hours late. I was under the impression it was part of the Analysis part. My bad!
+
 **People who worked on the project:** Elliott Bolzan. **Role:** every role.
 **Date started:** January 14th, 2017. **Date finished:** January 22nd, 2017. **Hours worked:** 30 hours.
 **Resources consulted for project:**
