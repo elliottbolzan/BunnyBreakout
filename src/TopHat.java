@@ -2,8 +2,8 @@
  * Elliott Bolzan, January 2017
  */
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -12,24 +12,26 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
+class HatPart extends Rectangle {
+	public HatPart(double width, double height) {
+		super(width, height);
+		setFill(Settings.WHITE);
+	}
+}
+
 /**
- * Create a bunny-themed paddle, composed of three rectangles.
+ * Create a paddle in the shape of a top hat, composed of three rectangles.
  */
+
 public class TopHat {
 
-	private Rectangle leftBrim;
-	private Rectangle core;
-	private Rectangle rightBrim;
-
-	private ArrayList<Rectangle> rectangles = new ArrayList<Rectangle>();
+	private HatPart leftBrim = new HatPart(Settings.BRIM_WIDTH, Settings.BRIM_HEIGHT);
+	private HatPart core = new HatPart(Settings.HAT_SIZE, Settings.HAT_SIZE);
+	private HatPart rightBrim = new HatPart(Settings.BRIM_WIDTH, Settings.BRIM_HEIGHT);
+	private List<HatPart> rectangles = Arrays.asList(leftBrim, core, rightBrim);
 	private Boolean extended = false;
 
 	public TopHat() {
-		leftBrim = new Rectangle(Settings.BRIM_WIDTH, Settings.BRIM_HEIGHT);
-		core = new Rectangle(Settings.HAT_SIZE, Settings.HAT_SIZE);
-		rightBrim = new Rectangle(Settings.BRIM_WIDTH, Settings.BRIM_HEIGHT);
-		rectangles.addAll(Arrays.asList(leftBrim, core, rightBrim));
-		setColor();
 		center();
 	}
 
@@ -39,30 +41,37 @@ public class TopHat {
 	public double getX() {
 		return leftBrim.getX();
 	}
+	
+	/**
+	 * @return the maximum X-coordinate for the hat.
+	 */
+	public double getMaxX() {
+		return getX() + getWidth();
+	}
 
 	/**
 	 * Setting the hat's X-coordinate involves setting it for three rectangles.
 	 */
 	public void setX(double value) {
 		leftBrim.setX(value);
-		core.setX(value + leftBrim.getWidth());
-		rightBrim.setX(value + leftBrim.getWidth() + Settings.HAT_SIZE);
+		core.setX(leftBrim.getBoundsInParent().getMaxX());
+		rightBrim.setX(core.getBoundsInParent().getMaxX());
 	}
 
 	/**
 	 * @return the hat's Y-coordinate.
 	 */
 	public double getY() {
-		return leftBrim.getBoundsInParent().getMinY();
+		return leftBrim.getY();
 	}
 
 	/**
 	 * Set that hat's Y-coordinate.
 	 */
 	public void setY(double value) {
-		leftBrim.setY(value);
-		core.setY(value);
-		rightBrim.setY(value);
+		for (Rectangle rect : rectangles) {
+			rect.setY(value);
+		}
 	}
 
 	/**
@@ -77,7 +86,7 @@ public class TopHat {
 	 */
 	public void setWidth(double value) {
 		double newBrimWidth = (value - Settings.HAT_SIZE) / 2;
-		leftBrim.setX(leftBrim.getX() - (newBrimWidth - leftBrim.getBoundsInParent().getWidth()));
+		leftBrim.setX(leftBrim.getBoundsInParent().getMaxX() - newBrimWidth);
 		leftBrim.setWidth(newBrimWidth);
 		rightBrim.setWidth(newBrimWidth);
 	}
@@ -92,15 +101,8 @@ public class TopHat {
 	/**
 	 * Get the hat's three rectangles.
 	 */
-	public ArrayList<Rectangle> getRectangles() {
+	public List<HatPart> getRectangles() {
 		return rectangles;
-	}
-
-	/**
-	 * Set the hat's rectangles.
-	 */
-	public void setRectangles(ArrayList<Rectangle> rectangles) {
-		this.rectangles = rectangles;
 	}
 
 	/**
@@ -111,26 +113,10 @@ public class TopHat {
 	}
 
 	/**
-	 * Set the hat's extended variable.
-	 */
-	public void setExtended(Boolean extended) {
-		this.extended = extended;
-	}
-
-	/**
-	 * Set the hat's color.
-	 */
-	private void setColor() {
-		for (Rectangle rect : rectangles) {
-			rect.setFill(Settings.WHITE);
-		}
-	}
-
-	/**
 	 * Center the hat.
 	 */
 	public void center() {
-		core.setX((Settings.WIDTH - core.getBoundsInParent().getWidth()) / 2);
+		core.setX((Settings.WIDTH - core.getWidth()) / 2);
 		core.setY(Settings.HEIGHT - core.getHeight() - Settings.HAT_OFFSET);
 		leftBrim.setX(core.getX() - leftBrim.getWidth());
 		leftBrim.setY(core.getY());
@@ -154,22 +140,28 @@ public class TopHat {
 		if (!extended) {
 			extended = true;
 			setWidth(getWidth() * 2);
-			Timeline timeline = new Timeline(
-					new KeyFrame(Duration.millis(Settings.DOUBLE_TOPHAT_DURATION), ae -> resetSize()));
+			Timeline timeline = new Timeline(new KeyFrame(Duration.millis(Settings.DOUBLE_TOPHAT_DURATION), ae -> resetSize()));
 			timeline.play();
 		}
 	}
-
+	
 	/**
 	 * Reset the hat's size.
 	 */
 	public void resetSize() {
 		extended = false;
-		setWidth(Settings.HAT_SIZE + 2 * Settings.BRIM_WIDTH);
+		setWidth(originalSize());
+	}
+	
+	/**
+	 * @return the original size of the top hat.
+	 */
+	private double originalSize() {
+		return Settings.HAT_SIZE + 2 * Settings.BRIM_WIDTH;
 	}
 
 	/**
-	 * Move the hat based on a keycode.
+	 * Move the hat based on a key code.
 	 * @param code the key pressed by the user.
 	 */
 	public void move(KeyCode code) {
@@ -182,6 +174,7 @@ public class TopHat {
 
 	/**
 	 * Move the hat to the right.
+	 * Wraps around if necessary.
 	 */
 	private void moveRight() {
 		if (Settings.WIDTH - getX() <= Settings.KEY_INPUT_SPEED) {
@@ -193,13 +186,22 @@ public class TopHat {
 
 	/**
 	 * Move the hat to the left.
+	 * Wraps around if necessary.
 	 */
 	private void moveLeft() {
-		if (getX() + getWidth() <= Settings.KEY_INPUT_SPEED) {
+		if (getMaxX() <= Settings.KEY_INPUT_SPEED) {
 			setX(Settings.WIDTH - getWidth());
 		} else {
 			setX(getX() - Settings.KEY_INPUT_SPEED);
 		}
+	}
+	
+	/**
+	 * @param view the view who's middle we seek.
+	 * @return the midpoint of the view on the X-axis.
+	 */
+	private double getMidpoint(ImageView view) {
+		return view.getX() + view.getBoundsInParent().getWidth() / 2;
 	}
 
 	/**
@@ -212,11 +214,10 @@ public class TopHat {
 
 	/**
 	 * @param view an ImageView, specifically, the bunny or power-up.
-	 * @return whether the hat's core was intersected.
+	 * @return whether the hat's core was intersected by the middle of the ImageView.
 	 */
 	public Boolean coreIntersected(ImageView view) {
-		return core.intersects(view.getX() + view.getBoundsInParent().getWidth() / 2, view.getY(), 1,
-				view.getBoundsInParent().getHeight());
+		return core.intersects(getMidpoint(view), view.getY(), 1, view.getBoundsInParent().getHeight());
 	}
 
 	/**
@@ -224,8 +225,9 @@ public class TopHat {
 	 * @return whether the hat's was intersected.
 	 */
 	public Boolean intersects(ImageView view) {
-		return leftBrim.intersects(view.getBoundsInParent()) || rightBrim.intersects(view.getBoundsInParent())
-				|| core.intersects(view.getBoundsInParent());
+		return leftBrim.intersects(view.getBoundsInParent()) ||
+				rightBrim.intersects(view.getBoundsInParent()) ||
+				core.intersects(view.getBoundsInParent());
 	}
 
 }

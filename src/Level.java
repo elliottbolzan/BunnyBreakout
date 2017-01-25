@@ -263,7 +263,7 @@ public class Level extends Group {
 		for (int i = 0; i < bunnies.size(); i++) {
 			Bunny bunny = bunnies.get(i);
 			bunny.updateLocation(elapsedTime, BUNNY_X_SPEED, BUNNY_Y_SPEED);
-			if (bunny.feelThrough()) {
+			if (bunny.fellThrough()) {
 				bunnies.remove(bunny);
 				continue;
 			}
@@ -282,23 +282,12 @@ public class Level extends Group {
 		for (int i = 0; i < blocks.size(); i++) {
 			Block block = blocks.get(i);
 			if (bunny.intersects(block.getBoundsInParent())) {
-				bounceOffBlock(block, bunny);
+				bunny.bounceOffBlock(block);
 				total += modifyBlock(block, bunny);
 				return total;
 			}
 		}
 		return total;
-	}
-
-	/**
-	 * Bounce bunny off block.
-	 */
-	private void bounceOffBlock(Block block, Bunny bunny) {
-		if (block.horizontalWallsIntersected(bunny)) {
-			bunny.setGoingDown(!bunny.getGoingDown());
-		} else if (block.verticalWallsIntersected(bunny)) {
-			bunny.setGoingRight(!bunny.getGoingRight());
-		}
 	}
 
 	/**
