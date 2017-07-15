@@ -1,6 +1,6 @@
 BunnyBreakout
 =============
-An individual project for Duke's Computer Science 308 (Design and Implementation). For this first project, I individually built a rabbit-themed breakout game.
+An individual project for Duke's Computer Science 308 (Design and Implementation). For this first project, I built a rabbit-themed breakout game (approximately 1000 lines of code).
 
 ![](images/1.png)
 
