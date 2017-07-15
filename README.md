@@ -1,14 +1,10 @@
 BunnyBreakout
 =============
+An individual project for Duke's Computer Science 308 (Design and Implementation). For this first project, I individually built a rabbit-themed breakout game.
 
-I apologize for submitting this README a few hours late. I was under the impression it was part of the Analysis part. My bad!
+![](./images/1)
 
-**People who worked on the project:** Elliott Bolzan. **Role:** every role.
-**Date started:** January 14th, 2017. **Date finished:** January 22nd, 2017. **Hours worked:** 30 hours.
-**Resources consulted for project:**
-
- - https://docs.oracle.com/javase/8/javafx/api/javafx/scene/text/Text.html
- - https://www.freesound.org/people/joshuaempyre/sounds/251461/
+![](./images/2)
 
 **File used to start / test the project:** BunnyBreakout.java.
 **Data or resource files required by the project:**
